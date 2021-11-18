@@ -3,12 +3,11 @@ import loader as load
 import preprocess as prep
 import process as proc
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.mode_selection import train_test_split
+from sklearn.model_selection import train_test_split
 
 
-#DATA_FILE = "NAACL_SRW_2016.csv"
-DATA_FILE = "test_load.csv"
-TWEETS_FILE = "tweets.txt"
+DATA_FILE = "NAACL_SRW_2016.csv"
+TWEETS_FILE = "tweets.csv"
 
 def main():
     # Invalid command line arguments provided
@@ -21,19 +20,20 @@ def main():
     # Ran with gen argument, pull tweets from Twitter, and saves to TWEETS_FILE
     if sys.argv[1] == "gen":
         # Load data from csv file. CSV file is from https://github.com/ZeerakW/hatespeech
-        tweet_ids, targets = load.load_csv_file(DATA_FILE)
+        tweet_ids, orig_targets = load.load_csv_file(DATA_FILE)
+        print("CSV load complete. Found", len(tweet_ids), "tweets.")
         # Load tweets from the given IDs
-        #tweets = load.load_tweets(tweet_ids)
-        tweets = tweet_ids
+        tweets, targets = load.load_tweets(tweet_ids, orig_targets)
+        print("Tweet Loading Complete. Found", len(tweets), "tweets.")
         # Save loaded tweets to TWEETS_FILE
-        load.save_tweets(tweets, TWEETS_FILE)
+        load.save_tweets(tweets, targets, TWEETS_FILE)
+        print("Tweet Saving Complete. Saved", len(tweets), "tweets.")
         
     # Ran with load argument, load preprocessed data from data file and train model
     if sys.argv[1] == "load":
-        # Load data from csv file. CSV file is from https://github.com/ZeerakW/hatespeech
-        tweet_ids, targets = load.load_csv_file(DATA_FILE)
         # Load tweets from TWEETS_FILE
-        tweets = load.load_tweet_file(TWEETS_FILE)
+        tweets, targets = load.load_tweet_file(TWEETS_FILE)
+        print("CSV load complete. Found", len(tweets), "tweets.")
         
     # Convert targets into none: 0, racism: 1, sexism: 2
     vec_targets = []
