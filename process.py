@@ -16,6 +16,6 @@ def calc_tfidfs(vector):
     This method calculates TFIDF values from vectorized tweets
     """
     tfidf_converter = txt.TfidfTransformer()
-    tfidfs = tfidf_voncerter.fit_transform(vector).toarray()
+    tfidfs = tfidf_converter.fit_transform(vector).toarray()
     
     return tfidfs

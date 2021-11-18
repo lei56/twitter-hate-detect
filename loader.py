@@ -2,6 +2,7 @@ import os
 import csv
 import re
 import tweepy as tweepy
+import pickle
 import pandas as pd
 import random
 import time
@@ -31,7 +32,8 @@ def load_tweet_file(filename):
     Loads pre-loaded tweets from file, where tweets are separated by \n.
     """
     col_names = ["tweet", "classification"]
-    df = pd.read_csv(filename, names=col_names)
+    df = pd.read_csv(filename, names=col_names, encoding='latin1')
+    df.tweet.replace({r'[^\x00-\x7F]+':''}, regex=True, inplace=True)
     tweets = df.tweet.to_list()
     classifications = df.classification.to_list()
 
@@ -93,3 +95,20 @@ def save_tweets(tweets, targets, filedest):
                 file.write('\n')
             except Exception as e:
                 print(e)
+                
+def save_model(classifier_filename, classifier):
+    """
+    Uses pickle library to save classifier
+    """
+    with open(classifier_filename, 'wb') as pfile:
+        pickle.dump(classifier, pfile)
+        print("Classifier saved at", classifier_filename)
+        
+def load_model(classifier_filename):
+    """
+    Uses pickle library to load classifier
+    """
+    with open(classifier_filename, 'rb') as fmodel:
+        classifier = pickle.load(fmodel)
+        print("Classifier loaded from", classifier_filename)
+        return classifier
